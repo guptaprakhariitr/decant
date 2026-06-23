@@ -1,0 +1,53 @@
+name: release
+on:
+  push:
+    tags: ["v*"]
+jobs:
+  dmg:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "22" }
+      - uses: dtolnay/rust-toolchain@stable
+
+      # 1) fetch the prebuilt engine sidecar (decantd). The engine is closed-source and built/released
+      #    separately; this shell repo only bundles the signed binary. Provide it via:
+      #      - ENGINE_RELEASE_REPO secret (e.g. "guptaprakhariitr/decant-engine") + token, OR
+      #      - commit the binary to src-tauri/binaries/ if you prefer (it's gitignored by default).
+      - name: fetch decantd sidecar
+        env:
+          GH_TOKEN: ${{ secrets.ENGINE_RELEASE_TOKEN }}
+          ENGINE_REPO: ${{ secrets.ENGINE_RELEASE_REPO }}
+        run: |
+          mkdir -p src-tauri/binaries
+          TRIPLE=$(rustc -Vv | sed -n 's/host: //p')
+          if [ -f "src-tauri/binaries/decantd-$TRIPLE" ]; then
+            echo "using committed sidecar"
+          elif [ -n "$ENGINE_REPO" ]; then
+            gh release download -R "$ENGINE_REPO" -p "decantd-$TRIPLE" -D src-tauri/binaries --clobber
+          else
+            echo "::error::No decantd sidecar. Set ENGINE_RELEASE_REPO/ENGINE_RELEASE_TOKEN or commit src-tauri/binaries/decantd-$TRIPLE"; exit 1
+          fi
+          chmod +x src-tauri/binaries/decantd-*
+
+      # 2) frontend + Tauri DMG
+      - name: build app
+        run: |
+          npm --prefix app install
+          npm i -g @tauri-apps/cli@^2
+          tauri build
+
+      # 3) sign + notarize ONLY if Apple credentials are present (set these repo secrets)
+      - name: notarize
+        if: ${{ env.APPLE_ID != '' }}
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: echo "notarization handled by tauri bundler when signing identity is configured"
+
+      - name: upload DMG to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: src-tauri/target/release/bundle/dmg/*.dmg

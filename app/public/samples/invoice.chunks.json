@@ -1,0 +1,23 @@
+{
+  "source": "tests/cases/invoice.pdf",
+  "content_hash": "2dd01dc72cb7f1b326b04d11508ec47a6f861cd166af44217efb8aeb446ee4b7",
+  "chunk_count": 1,
+  "chunks": [
+    {
+      "id": "c000",
+      "text": "NORTHWIND SUPPLY CO. 1180 Harbor Rd, Seattle WA 98101 invoices@northwind.co\nBILL TO: Acme Robotics Inc.\nINVOICE INV-2024-0915 Date: 2024-09-15 Due: 2024-10-15\nItem Qty Unit Amount Servo motor X9 12 210.00 2520.00 Controller board 4 415.00 1660.00 Shipping 140.00\nSubtotal 4320.00 Tax (8%) 345.60 TOTAL 4665.60",
+      "heading": null,
+      "page_start": 1,
+      "page_end": 1,
+      "block_ids": [
+        "p1.b00",
+        "p1.b01",
+        "p1.b02",
+        "p1.b03",
+        "p1.b04"
+      ],
+      "chars": 309,
+      "tokens": 78
+    }
+  ]
+}

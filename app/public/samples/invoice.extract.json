@@ -1,0 +1,247 @@
+{
+  "schema": "invoice",
+  "source": "tests/cases/invoice.pdf",
+  "values": {
+    "document_type": "invoice",
+    "vendor_name": "NORTHWIND SUPPLY CO.",
+    "vendor_address": "1180 Harbor Rd, Seattle WA 98101",
+    "vendor_email": "invoices@northwind.co",
+    "bill_to": "Acme Robotics Inc.",
+    "invoice_number": "INV-2024-0915",
+    "invoice_date": "2024-09-15",
+    "due_date": "2024-10-15",
+    "line_items": [
+      {
+        "description": "Servo motor X9",
+        "quantity": 12,
+        "unit_price": 210,
+        "amount": 2520
+      },
+      {
+        "description": "Controller board",
+        "quantity": 4,
+        "unit_price": 415,
+        "amount": 1660
+      },
+      {
+        "description": "Shipping",
+        "amount": 140
+      }
+    ],
+    "subtotal": 4320,
+    "tax_rate": "8%",
+    "tax": 345.6,
+    "total": 4665.6
+  },
+  "citations": {
+    "document_type": {
+      "confidence": "high",
+      "citations": [
+        {
+          "block_id": "p1.b02",
+          "page": 1,
+          "bbox": {
+            "x": 16.6,
+            "y": 88.71600000000001,
+            "w": 158.42519999999988,
+            "h": 36
+          },
+          "valid": true
+        }
+      ]
+    },
+    "vendor_name": {
+      "confidence": "high",
+      "citations": [
+        {
+          "block_id": "p1.b00",
+          "page": 1,
+          "bbox": {
+            "x": 16.6,
+            "y": 16.716000000000008,
+            "w": 230.43720000000005,
+            "h": 36
+          },
+          "valid": true
+        }
+      ]
+    },
+    "vendor_address": {
+      "confidence": "high",
+      "citations": [
+        {
+          "block_id": "p1.b00",
+          "page": 1,
+          "bbox": {
+            "x": 16.6,
+            "y": 16.716000000000008,
+            "w": 230.43720000000005,
+            "h": 36
+          },
+          "valid": true
+        }
+      ]
+    },
+    "vendor_email": {
+      "confidence": "high",
+      "citations": [
+        {
+          "block_id": "p1.b00",
+          "page": 1,
+          "bbox": {
+            "x": 16.6,
+            "y": 16.716000000000008,
+            "w": 230.43720000000005,
+            "h": 36
+          },
+          "valid": true
+        }
+      ]
+    },
+    "bill_to": {
+      "confidence": "high",
+      "citations": [
+        {
+          "block_id": "p1.b01",
+          "page": 1,
+          "bbox": {
+            "x": 16.6,
+            "y": 64.71600000000001,
+            "w": 194.43120000000002,
+            "h": 12
+          },
+          "valid": true
+        }
+      ]
+    },
+    "invoice_number": {
+      "confidence": "high",
+      "citations": [
+        {
+          "block_id": "p1.b02",
+          "page": 1,
+          "bbox": {
+            "x": 16.6,
+            "y": 88.71600000000001,
+            "w": 158.42519999999988,
+            "h": 36
+          },
+          "valid": true
+        }
+      ]
+    },
+    "invoice_date": {
+      "confidence": "high",
+      "citations": [
+        {
+          "block_id": "p1.b02",
+          "page": 1,
+          "bbox": {
+            "x": 16.6,
+            "y": 88.71600000000001,
+            "w": 158.42519999999988,
+            "h": 36
+          },
+          "valid": true
+        }
+      ]
+    },
+    "due_date": {
+      "confidence": "high",
+      "citations": [
+        {
+          "block_id": "p1.b02",
+          "page": 1,
+          "bbox": {
+            "x": 16.6,
+            "y": 88.71600000000001,
+            "w": 158.42519999999988,
+            "h": 36
+          },
+          "valid": true
+        }
+      ]
+    },
+    "line_items": {
+      "confidence": "high",
+      "citations": [
+        {
+          "block_id": "p1.b03",
+          "page": 1,
+          "bbox": {
+            "x": 16.6,
+            "y": 136.716,
+            "w": 302.4491999999999,
+            "h": 48
+          },
+          "valid": true
+        }
+      ]
+    },
+    "subtotal": {
+      "confidence": "high",
+      "citations": [
+        {
+          "block_id": "p1.b04",
+          "page": 1,
+          "bbox": {
+            "x": 16.6,
+            "y": 196.716,
+            "w": 129.6203999999999,
+            "h": 36
+          },
+          "valid": true
+        }
+      ]
+    },
+    "tax_rate": {
+      "confidence": "high",
+      "citations": [
+        {
+          "block_id": "p1.b04",
+          "page": 1,
+          "bbox": {
+            "x": 16.6,
+            "y": 196.716,
+            "w": 129.6203999999999,
+            "h": 36
+          },
+          "valid": true
+        }
+      ]
+    },
+    "tax": {
+      "confidence": "high",
+      "citations": [
+        {
+          "block_id": "p1.b04",
+          "page": 1,
+          "bbox": {
+            "x": 16.6,
+            "y": 196.716,
+            "w": 129.6203999999999,
+            "h": 36
+          },
+          "valid": true
+        }
+      ]
+    },
+    "total": {
+      "confidence": "high",
+      "citations": [
+        {
+          "block_id": "p1.b04",
+          "page": 1,
+          "bbox": {
+            "x": 16.6,
+            "y": 196.716,
+            "w": 129.6203999999999,
+            "h": 36
+          },
+          "valid": true
+        }
+      ]
+    }
+  },
+  "issues": []
+}
