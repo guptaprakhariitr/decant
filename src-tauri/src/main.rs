@@ -4,6 +4,20 @@
 
 use std::process::Command;
 
+// Build a Command for the engine; on Windows suppress the console window the sidecar would
+// otherwise flash (CREATE_NO_WINDOW). No-op on macOS/Linux.
+fn engine_cmd<S: AsRef<std::ffi::OsStr>>(program: S) -> Command {
+    let c = Command::new(program);
+    #[cfg(windows)]
+    let c = {
+        use std::os::windows::process::CommandExt;
+        let mut c = c;
+        c.creation_flags(0x0800_0000); // CREATE_NO_WINDOW
+        c
+    };
+    c
+}
+
 // Resolve how to invoke the engine. The engine (`decantd`) ships as a prebuilt, self-contained
 // binary — its source is not part of this open-source shell repo.
 // - Release: the bundled `decantd` sidecar placed next to the app executable by Tauri.
@@ -12,7 +26,7 @@ use std::process::Command;
 fn engine_command(args: &[&str]) -> Command {
     // 1) explicit override
     if let Ok(bin) = std::env::var("DECANT_ENGINE") {
-        let mut c = Command::new(bin);
+        let mut c = engine_cmd(bin);
         c.args(args);
         return c;
     }
@@ -21,7 +35,7 @@ fn engine_command(args: &[&str]) -> Command {
         if let Some(dir) = exe.parent() {
             let sidecar = dir.join("decantd");
             if sidecar.exists() {
-                let mut c = Command::new(sidecar);
+                let mut c = engine_cmd(sidecar);
                 c.args(args);
                 return c;
             }
@@ -29,7 +43,7 @@ fn engine_command(args: &[&str]) -> Command {
     }
     // 3) dev fallback: the prebuilt sidecar checked into src-tauri/binaries/ for the host triple
     let bin = concat!(env!("CARGO_MANIFEST_DIR"), "/binaries/decantd-aarch64-apple-darwin");
-    let mut c = Command::new(bin);
+    let mut c = engine_cmd(bin);
     c.args(args);
     c
 }

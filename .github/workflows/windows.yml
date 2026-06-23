@@ -1,0 +1,45 @@
+name: windows
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to attach the .exe to"
+        default: "v0.0.1"
+        required: true
+  push:
+    tags: ["v*"]
+permissions:
+  contents: write   # built-in GITHUB_TOKEN: read engine asset from + upload installer to this repo's release. No external secrets.
+jobs:
+  build:
+    runs-on: windows-latest
+    env:
+      TAG: ${{ github.event.inputs.tag || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "22" }
+      - uses: dtolnay/rust-toolchain@stable
+
+      # Engine sidecar: download the prebuilt Windows binary from THIS repo's public release.
+      # The engine source is never fetched — only the compiled artifact (same model as macOS).
+      - name: fetch decantd sidecar
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p src-tauri/binaries
+          gh release download "$TAG" -R "$GITHUB_REPOSITORY" -p "decantd-x86_64-pc-windows-msvc.exe" -D src-tauri/binaries --clobber
+
+      - name: build Windows installer
+        run: |
+          npm --prefix app install
+          npm i -g @tauri-apps/cli@^2
+          tauri build --bundles nsis
+
+      - name: upload installer to release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload "$TAG" src-tauri/target/release/bundle/nsis/*-setup.exe --clobber -R "$GITHUB_REPOSITORY"
