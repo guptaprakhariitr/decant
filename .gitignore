@@ -57,7 +57,6 @@ Thumbs.db
 
 # ─────────────────────────────── decant-specific ────────────────────────────
 app/public/pdf.worker.min.mjs
-docs/screenshots/*.png
 tests/heavy/*.pdf
 tests/bench-*.json
 # ── Secret/credential files — NEVER commit (see ../CLAUDE.md RULE #1) ──

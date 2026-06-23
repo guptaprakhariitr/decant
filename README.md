@@ -33,6 +33,8 @@ Three things, all from the same local layout model:
 
 Low-confidence or inconsistent values get flagged so you can **Fix** (edit inline) or **Approve** them — nothing is silently trusted.
 
+![Extract — flagged fields with inline Fix / Approve review](docs/screenshots/review.png)
+
 ![Parse — the whole document as clean Markdown, every block typed and overlaid on the page](docs/screenshots/parse.png)
 
 ![Settings — bring your own engine: Claude Code, Cursor, an API key, or a local model](docs/screenshots/settings.png)
@@ -69,10 +71,33 @@ checks run locally; failures go to the needs-attention queue.
 
 ## How it works
 
-Your machine does nine steps; the model does one:
+Your machine does the work end-to-end; the model does one focused step in the middle.
 
-```
-render → layout → tables → OCR → block model → [ model extract ] → validate → ground → cite → export
+```mermaid
+flowchart TD
+    subgraph MAC["On your Mac — local · $0 · private"]
+        direction TB
+        ING["Ingest & render<br/>pages to pixels + text"] --> LAY["Layout, tables & OCR"]
+        LAY --> BLK["Block model<br/>typed blocks + bounding boxes"]
+        BLK --> PR["Prompt builder<br/>blocks + your schema"]
+        PR --> ENG{{"Your engine — one step<br/>Claude Code · Cursor · API key · local"}}
+        ENG --> PARSE["Parse JSON"]
+        PARSE --> VAL["Validate<br/>type · required · regex · enum"]
+        VAL --> GND["Ground<br/>value must appear in its cited block"]
+        GND --> XCK["Cross-checks<br/>sums · totals · date order"]
+        XCK --> CNF["Confidence<br/>from evidence, not self-report"]
+        CNF --> OUT["Export — JSON · CSV · Markdown · JSONL"]
+    end
+
+    DOC["Document — PDF · scan · image · XLSX"] --> ING
+    GND -.->|"ungrounded or failed check"| FLAG["Needs attention<br/>Fix / Approve"]
+
+    classDef model fill:#A78BFA,stroke:#7C5CF0,color:#16121f,font-weight:bold;
+    classDef io fill:#5BC8D6,stroke:#147E92,color:#08252b;
+    classDef flag fill:#f0c674,stroke:#A9761B,color:#2a2008;
+    class ENG model;
+    class DOC,OUT io;
+    class FLAG flag;
 ```
 
 Every extracted value comes back as `{ value, confidence, citations: [{ block_id, page, bbox, valid }] }`.
