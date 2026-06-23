@@ -31,11 +31,15 @@ jobs:
           mkdir -p src-tauri/binaries
           gh release download "$TAG" -R "$GITHUB_REPOSITORY" -p "decantd-x86_64-pc-windows-msvc.exe" -D src-tauri/binaries --clobber
 
+      # Build the frontend explicitly (cwd-independent), then bundle — neutralizing the repo's
+      # relative beforeBuildCommand which resolves differently on the Windows runner.
       - name: build Windows installer
+        shell: bash
         run: |
-          npm --prefix app install
+          npm --prefix app ci || npm --prefix app install
+          npm --prefix app run build
           npm i -g @tauri-apps/cli@^2
-          tauri build --bundles nsis
+          tauri build --bundles nsis --config '{"build":{"beforeBuildCommand":""}}'
 
       - name: upload installer to release
         shell: bash
