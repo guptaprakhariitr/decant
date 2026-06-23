@@ -2,7 +2,7 @@
 
 Decant turns documents (PDF · scans · images · XLSX) into clean, **cited** structured data, running
 the AI step on an engine **you already have** — Claude Code, Cursor, an Anthropic API key, or a local
-model. $0 inference, and nothing leaves your Mac.
+model. No inference cost, and nothing leaves your Mac.
 
 It does three jobs, all from the same local block model:
 
@@ -15,7 +15,7 @@ It does three jobs, all from the same local block model:
 ## Who it's for
 
 - **Analysts / ops** — pull fields off invoices, receipts, bank statements, KYC forms, and contracts into JSON/CSV, on-device.
-- **RAG / data engineers** — parse + chunk private corpora locally into JSONL; zero egress, $0 per page.
+- **RAG / data engineers** — parse + chunk private corpora locally into JSONL; zero egress, no per-page cost.
 - **Developers** — script `decantd` in pipelines (`extract / parse / chunk`), or use the desktop app; every value carries `{value, confidence, citations[]}`.
 - **Privacy-bound teams** (finance, legal, healthcare, gov) — documents physically never leave the machine; parsing & OCR even work offline.
 
@@ -30,6 +30,6 @@ It does three jobs, all from the same local block model:
 ## Why local-first
 
 - **Private** — your documents never touch a server; a hard local-only switch blocks any egress.
-- **$0 inference** — the AI runs on a seat you already pay for (or a local model), not a metered API.
+- **No inference cost** — the AI runs on a seat you already pay for (or a local model), not a metered API.
 - **Cited & grounded** — every value is checked against the block it came from, and unverifiable citations are flagged for review.
 - **Yours** — open-source shell, self-contained binary, no account or lock-in.

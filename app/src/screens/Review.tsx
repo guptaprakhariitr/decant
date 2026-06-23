@@ -442,7 +442,7 @@ export function Review({
             <div className="empty">
               <div className="empty-ic spin"><Icon name="refresh" size={30} /></div>
               <b>Chunking… <ElapsedTimer className="ldr-time" /></b>
-              <p>Splitting {docName} into retrieval-ready chunks (local, $0).</p>
+              <p>Splitting {docName} into retrieval-ready chunks (local, free).</p>
             </div>
           ) : (
             <div className="parsepane">

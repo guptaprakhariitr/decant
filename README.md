@@ -12,6 +12,8 @@ one focused step, and every value is checked against the page it was pulled from
 
 ![Decant — Extract: every value cited to its place on the page, with a Formatted/JSON toggle](docs/screenshots/extract.png)
 
+![Settings — bring your own engine: Claude Code, Cursor, an API key, or a local model](docs/screenshots/settings.png)
+
 ## Get started
 
 Download `Decant_<version>_aarch64.dmg` from [Releases](../../releases/latest), drag it to
@@ -33,9 +35,9 @@ Three things, all from the same local layout model:
 
 Low-confidence or inconsistent values get flagged so you can **Fix** (edit inline) or **Approve** them — nothing is silently trusted.
 
-![Parse — the whole document as clean Markdown, every block typed and overlaid on the page](docs/screenshots/parse.png)
+![Extract — flagged fields with inline Fix / Approve review](docs/screenshots/review.png)
 
-![Settings — bring your own engine: Claude Code, Cursor, an API key, or a local model](docs/screenshots/settings.png)
+![Parse — the whole document as clean Markdown, every block typed and overlaid on the page](docs/screenshots/parse.png)
 
 ## Use it from the CLI
 
@@ -69,16 +71,29 @@ checks run locally; failures go to the needs-attention queue.
 
 ## How it works
 
-Your machine does nine steps; the model does one:
+Your machine does the work end-to-end; the model does one focused step in the middle.
 
-```
-render → layout → tables → OCR → block model → [ model extract ] → validate → ground → cite → export
+```mermaid
+flowchart LR
+    DOC["Document<br/>PDF · scan · image · XLSX"]:::io --> ING
+    subgraph MAC["On your Mac — local · free · private"]
+        direction LR
+        ING["Ingest · layout<br/>tables · OCR"] --> BLK["Block model<br/>+ bounding boxes"]
+        BLK --> ENG{{"Your engine<br/>one step"}}:::model
+        ENG --> CHK["Validate · ground<br/>cross-check · confidence"]
+        CHK --> OUT["Export<br/>JSON · CSV · MD · JSONL"]:::io
+    end
+    CHK -.->|"failed check"| FLAG["Fix / Approve"]:::flag
+
+    classDef model fill:#A78BFA,stroke:#7C5CF0,color:#16121f,font-weight:bold;
+    classDef io fill:#5BC8D6,stroke:#147E92,color:#08252b;
+    classDef flag fill:#f0c674,stroke:#A9761B,color:#2a2008;
 ```
 
 Every extracted value comes back as `{ value, confidence, citations: [{ block_id, page, bbox, valid }] }`.
 "Grounding" means the value is checked against the text of the block it cites — if it isn't actually
 there, the citation is marked invalid and the field is flagged. Cross-field checks (sums, totals, date
-order) and type normalization (dates → ISO, currency → number) run locally and for $0.
+order) and type normalization (dates → ISO, currency → number) run locally at no cost.
 
 The AI step runs on an engine you connect, in priority order:
 `claude-cli → agent-sdk → cursor → local (Ollama) → api-key → dry-run (offline mock)`.

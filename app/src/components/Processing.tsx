@@ -26,7 +26,7 @@ const HOLD_MSGS = [
   "Mapping each value to where it appears…",
   "Calibrating confidence on extracted fields…",
   "Tidying the raw layout into clean structure…",
-  "$0 inference — running on your own AI…",
+  "No inference cost — running on your own AI…",
   "Nothing leaves your Mac — all local…",
   "Matching headers against the schema…",
   "Finalizing the structured output…",

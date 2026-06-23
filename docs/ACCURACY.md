@@ -1,7 +1,7 @@
 # Decant — Accuracy
 
 How Decant keeps extraction accurate. The model does one step; most accuracy work is
-**deterministic post-processing + tests** that run locally and for $0. The layers below are all
+**deterministic post-processing + tests** that run locally at no cost. The layers below are all
 implemented.
 
 ## The accuracy layers

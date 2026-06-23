@@ -53,12 +53,12 @@ const CFG: { name: string; what: string }[] = [
 
 export function Guide({ onConnect }: { onConnect?: () => void }) {
   const steps: Step[] = [
-    { n: 1, title: "Connect an AI engine", body: "Decant runs the AI on an engine you already have — Claude Code CLI, Cursor, an Anthropic API key, or a local model (Ollama) — so it’s $0 to us and nothing leaves your Mac. Parsing & OCR work offline; field extraction needs a connected engine.", art: <ArtIcon name="terminal" />, cta: true },
+    { n: 1, title: "Connect an AI engine", body: "Decant runs the AI on an engine you already have — Claude Code CLI, Cursor, an Anthropic API key, or a local model (Ollama) — so it’s free to run and nothing leaves your Mac. Parsing & OCR work offline; field extraction needs a connected engine.", art: <ArtIcon name="terminal" />, cta: true },
     { n: 2, title: "Add a document", body: "On Home, drop a file or click Browse — PDF, scans/images, or XLSX spreadsheets. Folders work too. It opens in Decant Studio.", art: <ArtDrop /> },
     { n: 3, title: "Set your defaults (once)", body: "In Settings ▸ Extraction, choose the default Schema and Depth every new job starts with — including a Custom schema you build by hand. Per-document tweaks (Depth, Pages, vision, Notes) live in the Studio Options panel. Full meanings are in the table below.", art: <ArtIcon name="sliders" /> },
     { n: 4, title: "Review — Extract", body: "The Extract tab shows the fields (auto-discovered or per your schema) and tables. Each value is highlighted on the page where it was found (a citation) — each field gets its own color just so you can tell the highlights apart. Hover a row to flash its highlight; a ⚠ marks fields worth a second look.", art: <ArtExtract /> },
     { n: 5, title: "Parse the whole document", body: "The Parse tab renders the document as clean Markdown with tables, and overlays every block on the page color-coded by type (heading / table / text / figure).", art: <ArtParse /> },
-    { n: 6, title: "Chunk for RAG", body: "The Chunks tab splits the document into retrieval-ready chunks with provenance — export as JSONL for your RAG pipeline. Local and $0.", art: <ArtIcon name="layout" /> },
+    { n: 6, title: "Chunk for RAG", body: "The Chunks tab splits the document into retrieval-ready chunks with provenance — export as JSONL for your RAG pipeline. Local and free.", art: <ArtIcon name="layout" /> },
     { n: 7, title: "Tweak & Reparse", body: "Use the Options panel (left of the tabs) to change Depth, Pages, toggle Figures (vision), or add Notes — then Reparse to re-run with those settings.", art: <ArtIcon name="refresh" /> },
     { n: 8, title: "Export", body: "Copy or Download from any tab — JSON for Extract, Markdown for Parse, JSONL for Chunks. Download opens a Save dialog so you choose where it lands.", art: <ArtIcon name="download" /> },
   ];

@@ -33,7 +33,7 @@ export function Home({
           <div className="cb-ic"><Icon name="terminal" size={20} /></div>
           <div className="cb-body">
             <b>Connect an AI engine to extract</b>
-            <p>Decant runs on an engine you already have — Claude Code CLI, Cursor, an Anthropic API key, or a local model — $0 to us, nothing leaves your Mac. Parsing &amp; OCR work offline meanwhile; field extraction needs a connected engine.</p>
+            <p>Decant runs on an engine you already have — Claude Code CLI, Cursor, an Anthropic API key, or a local model — free to run, nothing leaves your Mac. Parsing &amp; OCR work offline meanwhile; field extraction needs a connected engine.</p>
           </div>
           <button className="btn pri" onClick={onConnect}>Connect <Icon name="arrowRight" size={15} /></button>
         </div>

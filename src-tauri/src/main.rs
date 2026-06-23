@@ -1,5 +1,5 @@
 // Decant — Tauri shell. Thin native window; all real work goes to the engine (`decantd`).
-// The engine runs the deterministic pipeline locally and calls the USER'S OWN Claude → $0.
+// The engine runs the deterministic pipeline locally and calls the USER'S OWN engine (no inference cost).
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::process::Command;

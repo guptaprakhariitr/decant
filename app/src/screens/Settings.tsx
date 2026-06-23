@@ -213,7 +213,7 @@ export function Settings({
             <>
               <p className="muted lede" style={{ marginTop: 0 }}>
                 Decant runs the AI on an engine you connect — <b style={{ color: "var(--text)" }}>your own</b> Claude Code,
-                Cursor, an Anthropic API key, or a local model — $0 inference, nothing leaves your Mac. Parsing, OCR and
+                Cursor, an Anthropic API key, or a local model — no inference cost, nothing leaves your Mac. Parsing, OCR and
                 export work even with no model connected.
               </p>
 
