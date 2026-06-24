@@ -229,6 +229,8 @@ svg{display:block;flex:none;}
 .eng-head{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:14px 16px;}
 .eng-chev{color:var(--faint);transition:transform var(--tr);flex:none;} .eng-chev.up{transform:rotate(180deg);}
 .eng-drawer{display:flex;flex-direction:column;align-items:flex-start;gap:11px;padding:0 16px 15px 70px;}
+.drawer-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.eng-inuse{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--green);font-weight:600;}
 .drawer-how{margin:0;color:var(--muted);font-size:13px;line-height:1.5;max-width:64ch;}
 .drawer-ok{display:flex;align-items:center;gap:7px;margin:0;color:var(--green);font-size:13px;}
 .cmd{display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 8px 8px 12px;width:100%;max-width:520px;}

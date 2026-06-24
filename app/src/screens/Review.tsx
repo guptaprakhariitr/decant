@@ -39,6 +39,7 @@ export function Review({
   onChunked,
   onBack,
   onExtractionChange,
+  engineAdapter,
 }: {
   job?: Job | null;
   localOnly?: boolean;
@@ -48,6 +49,7 @@ export function Review({
   onRerun?: (patch?: { notes?: string; mode?: Mode; pages?: string; vision?: boolean }) => void;
   onBack?: () => void;
   onExtractionChange?: (id: string, extraction: Extraction) => void;
+  engineAdapter?: string;
 }) {
   const [tab, setTab] = useState<"extract" | "parse" | "chunks">("extract");
   const [view, setView] = useState<"formatted" | "json">("formatted"); // Extract: field list vs raw JSON
@@ -198,7 +200,7 @@ export function Review({
     setParseLoading(true);
     setParseError(null);
     const t0 = Date.now();
-    parseDoc(job.picked?.path ?? "sample", { localOnly: !!localOnly, mode: job.mode, pages: job.pages })
+    parseDoc(job.picked?.path ?? "sample", { localOnly: !!localOnly, mode: job.mode, pages: job.pages, adapter: engineAdapter })
       .then((r) => onParsed?.(job.id, r, (Date.now() - t0) / 1000))
       .catch((e) => setParseError(String(e?.message ?? e)))
       .finally(() => setParseLoading(false));

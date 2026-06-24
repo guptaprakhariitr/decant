@@ -1,6 +1,6 @@
 [package]
 name = "decant"
-version = "0.0.2"
+version = "0.0.3"
 description = "Decant — local document → structured data, on your own Claude"
 authors = ["Prakhar Gupta"]
 edition = "2021"

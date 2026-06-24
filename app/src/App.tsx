@@ -25,6 +25,7 @@ type PersistedState = {
   localOnly: boolean;
   screen: Screen;
   theme?: Theme;
+  preferredEngine?: string | null;
   defSchema?: string;
   defMode?: Mode;
   defCustom?: BField[];
@@ -45,6 +46,7 @@ export function App() {
   const [detectError, setDetectError] = useState<string | null>(null);
   const [checking, setChecking] = useState(false);
   const [localOnly, setLocalOnly] = useState(true);
+  const [preferredEngine, setPreferredEngine] = useState<string | null>(null); // null = auto (priority order)
   const [theme, setTheme] = useState<Theme>("light");
   const [settingsSection, setSettingsSection] = useState<"appearance" | "models" | "extraction">("appearance");
   // ---- extraction defaults (live in Settings; applied to each new job) ----
@@ -82,6 +84,7 @@ export function App() {
         setActiveJobId(s.activeJobId ?? null);
         if (typeof s.localOnly === "boolean") setLocalOnly(s.localOnly);
         if (s.theme === "dark" || s.theme === "light" || s.theme === "system") setTheme(s.theme);
+        if (typeof s.preferredEngine === "string" || s.preferredEngine === null) setPreferredEngine(s.preferredEngine);
         if (typeof s.defSchema === "string") setDefSchema(s.defSchema);
         if (s.defMode === "fast" || s.defMode === "balanced" || s.defMode === "deep") setDefMode(s.defMode);
         if (Array.isArray(s.defCustom) && s.defCustom.length) setDefCustom(s.defCustom);
@@ -96,8 +99,8 @@ export function App() {
     if (!hydrated) return;
     // Cap retained jobs (newest first) so ui-state.json stays bounded even after heavy use.
     const kept = [...jobs].sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0)).slice(0, 200);
-    saveState({ v: 1, jobs: kept, activeJobId, localOnly, screen, theme, defSchema, defMode, defCustom } satisfies PersistedState);
-  }, [hydrated, jobs, activeJobId, localOnly, screen, theme, defSchema, defMode, defCustom]);
+    saveState({ v: 1, jobs: kept, activeJobId, localOnly, screen, theme, preferredEngine, defSchema, defMode, defCustom } satisfies PersistedState);
+  }, [hydrated, jobs, activeJobId, localOnly, screen, theme, preferredEngine, defSchema, defMode, defCustom]);
 
   // New jobs inherit the extraction defaults set in Settings (per-job overrides live in the Studio Options panel).
   function addFiles(files: PickedFile[]) {
@@ -152,6 +155,12 @@ export function App() {
     (a) => lightOf(a) === "green" && a.id !== "dry-run" && a.vision && !(localOnly && a.egress),
   );
 
+  // Engines the user can actually run right now, and the resolved active one: the user's pick if it's
+  // still usable, otherwise auto (priority order via the engine). Passed to extract/parse as --adapter.
+  const usableEngines = adapters.filter((a) => lightOf(a) === "green" && a.id !== "dry-run" && !(localOnly && a.egress));
+  const activeEngineId =
+    preferredEngine && usableEngines.some((a) => a.id === preferredEngine) ? preferredEngine : usableEngines[0]?.id ?? "";
+
   // Sequential queue: one queued job at a time through the real engine.
   const running = useRef(false);
   useEffect(() => {
@@ -165,7 +174,7 @@ export function App() {
       try {
         let imageB64 = "";
         if (visionReady && next.picked) imageB64 = await prepPageImage(next.picked, next.mode, !!next.vision);
-        const ex = await extract(next.picked?.path ?? "sample", next.schemaDef, { localOnly, mode: next.mode, pages: next.pages, imageB64, notes: next.notes, vision: next.vision });
+        const ex = await extract(next.picked?.path ?? "sample", next.schemaDef, { localOnly, mode: next.mode, pages: next.pages, imageB64, notes: next.notes, vision: next.vision, adapter: activeEngineId });
         const secs = (Date.now() - t0) / 1000;
         setJobs((prev) =>
           prev.map((j) =>
@@ -268,6 +277,7 @@ export function App() {
                 onParsed={setParse}
                 onChunked={setChunks}
                 onExtractionChange={setExtraction}
+                engineAdapter={activeEngineId}
                 onBack={() => setActiveJobId(null)}
               />
             ) : (
@@ -285,6 +295,8 @@ export function App() {
               onSection={setSettingsSection}
               onRecheck={recheck}
               onToggleLocalOnly={() => setLocalOnly((v) => !v)}
+              preferredEngine={preferredEngine}
+              onSelectEngine={setPreferredEngine}
               defSchema={defSchema}
               onDefSchema={setDefSchema}
               defMode={defMode}

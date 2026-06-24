@@ -59,8 +59,8 @@ function CmdRow({ cmd }: { cmd: string }) {
   );
 }
 
-function EngineRow({ a, active, blocked, onRecheck, checking }: {
-  a: Availability; active: boolean; blocked: boolean; onRecheck: () => void; checking: boolean;
+function EngineRow({ a, active, blocked, selectable, onSelect, onRecheck, checking }: {
+  a: Availability; active: boolean; blocked: boolean; selectable: boolean; onSelect: () => void; onRecheck: () => void; checking: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const lt = lightOf(a);
@@ -97,10 +97,19 @@ function EngineRow({ a, active, blocked, onRecheck, checking }: {
               {m.setup?.cmd && <CmdRow cmd={m.setup.cmd} />}
             </>
           )}
-          <button className="btn" onClick={(e) => { e.stopPropagation(); onRecheck(); }} disabled={checking}>
-            <Icon name="refresh" size={13} className={checking ? "spin" : ""} />
-            {checking ? "Testing…" : "Test connection"}
-          </button>
+          <div className="drawer-actions">
+            {selectable && (active ? (
+              <span className="eng-inuse"><Icon name="checkCircle" size={13} /> In use for extraction</span>
+            ) : (
+              <button className="btn pri" onClick={(e) => { e.stopPropagation(); onSelect(); }}>
+                <Icon name="check" size={13} />Use this engine
+              </button>
+            ))}
+            <button className="btn" onClick={(e) => { e.stopPropagation(); onRecheck(); }} disabled={checking}>
+              <Icon name="refresh" size={13} className={checking ? "spin" : ""} />
+              {checking ? "Testing…" : "Test connection"}
+            </button>
+          </div>
         </div>
       )}
     </div>
@@ -134,6 +143,8 @@ export function Settings({
   onSection,
   onRecheck,
   onToggleLocalOnly,
+  preferredEngine,
+  onSelectEngine,
   defSchema,
   onDefSchema,
   defMode,
@@ -151,6 +162,8 @@ export function Settings({
   onSection: (s: SectionId) => void;
   onRecheck: () => void;
   onToggleLocalOnly: () => void;
+  preferredEngine: string | null;
+  onSelectEngine: (id: string | null) => void;
   defSchema: string;
   onDefSchema: (s: string) => void;
   defMode: Mode;
@@ -159,7 +172,9 @@ export function Settings({
   onDefCustom: (f: BField[]) => void;
 }) {
   const usable = adapters.filter((a) => lightOf(a) === "green" && a.id !== "dry-run" && !(localOnly && a.egress));
-  const activeId = usable[0]?.id ?? "dry-run";
+  const usableIds = new Set(usable.map((a) => a.id));
+  // active = the user's pick if it's still usable, else auto (first by priority)
+  const activeId = preferredEngine && usableIds.has(preferredEngine) ? preferredEngine : usable[0]?.id ?? "dry-run";
 
   return (
     <div className="settings">
@@ -247,10 +262,20 @@ export function Settings({
                   {checking ? "Checking…" : "Re-check engines"}
                 </button>
               </div>
+              {usable.length > 1 && (
+                <p className="muted" style={{ marginTop: 0, fontSize: 12.5 }}>
+                  {preferredEngine && usableIds.has(preferredEngine)
+                    ? <>Using <b style={{ color: "var(--text)" }}>{META[activeId]?.name ?? activeId}</b> by your choice. </>
+                    : <>Auto-using <b style={{ color: "var(--text)" }}>{META[activeId]?.name ?? activeId}</b> (highest priority). </>}
+                  Expand a ready engine to switch.{preferredEngine && <> <button className="linkbtn" onClick={() => onSelectEngine(null)}>Reset to auto</button></>}
+                </p>
+              )}
 
               {adapters.map((a) => (
                 <EngineRow key={a.id} a={a} active={a.id === activeId}
-                  blocked={localOnly && a.egress && lightOf(a) !== "gray"} onRecheck={onRecheck} checking={!!checking} />
+                  blocked={localOnly && a.egress && lightOf(a) !== "gray"}
+                  selectable={usableIds.has(a.id)} onSelect={() => onSelectEngine(a.id)}
+                  onRecheck={onRecheck} checking={!!checking} />
               ))}
             </>
           )}

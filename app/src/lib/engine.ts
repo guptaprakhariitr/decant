@@ -69,6 +69,7 @@ export interface ExtractOpts {
   imageB64?: string; // optional page image (Deep + vision) — base64 PNG, no data: prefix
   notes?: string; // extra per-job instructions appended to the model prompt
   vision?: boolean; // force the figure/chart vision pass
+  adapter?: string; // pin a specific engine (e.g. "cursor"); empty = auto-pick by priority
 }
 
 export async function extract(file: string, schema: SchemaDef, opts: ExtractOpts = {}): Promise<Extraction> {
@@ -84,6 +85,7 @@ export async function extract(file: string, schema: SchemaDef, opts: ExtractOpts
       imageB64: opts.imageB64 ?? "",
       notes: opts.notes ?? "",
       vision: !!opts.vision,
+      adapter: opts.adapter ?? "",
     });
   }
   const res = await fetch("/samples/invoice.extract.json");
@@ -145,6 +147,7 @@ export async function parseDoc(file: string, opts: ExtractOpts = {}): Promise<Pa
       mode: opts.mode ?? "balanced",
       pages: opts.pages ?? "",
       notes: opts.notes ?? "",
+      adapter: opts.adapter ?? "",
     });
   }
   const res = await fetch("/samples/invoice.parse.json");

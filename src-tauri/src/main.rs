@@ -75,7 +75,7 @@ static JOB_SEQ: AtomicU64 = AtomicU64::new(0);
 // main thread — the UI stays responsive and multiple jobs can be queued. The schema is passed
 // inline and written to a per-call temp .json the engine reads (engine itself is untouched).
 #[tauri::command]
-async fn extract(file: String, schema_json: String, local_only: bool, mode: String, pages: String, image_b64: String, notes: String, vision: bool) -> Result<serde_json::Value, String> {
+async fn extract(file: String, schema_json: String, local_only: bool, mode: String, pages: String, image_b64: String, notes: String, vision: bool, adapter: String) -> Result<serde_json::Value, String> {
     tauri::async_runtime::spawn_blocking(move || {
         let n = JOB_SEQ.fetch_add(1, Ordering::Relaxed);
         let schema_path = std::env::temp_dir().join(format!("decant-schema-{n}.json"));
@@ -115,6 +115,10 @@ async fn extract(file: String, schema_json: String, local_only: bool, mode: Stri
         }
         if vision {
             args.push("--vision");
+        }
+        if !adapter.is_empty() {
+            args.push("--adapter");
+            args.push(&adapter);
         }
         let raw = run_engine(&args)?;
         let parsed = serde_json::from_str::<serde_json::Value>(&raw).map_err(|e| format!("bad extract json: {e}"));
@@ -188,7 +192,7 @@ fn load_state() -> Result<String, String> {
 
 // PARSE mode: full document → faithful Markdown. Async/off-thread like extract.
 #[tauri::command]
-async fn parse_doc(file: String, local_only: bool, mode: String, pages: String, notes: String) -> Result<serde_json::Value, String> {
+async fn parse_doc(file: String, local_only: bool, mode: String, pages: String, notes: String, adapter: String) -> Result<serde_json::Value, String> {
     tauri::async_runtime::spawn_blocking(move || {
         let mut args: Vec<&str> = vec!["format", &file];
         if local_only {
@@ -205,6 +209,10 @@ async fn parse_doc(file: String, local_only: bool, mode: String, pages: String, 
         if !notes.is_empty() {
             args.push("--notes");
             args.push(&notes);
+        }
+        if !adapter.is_empty() {
+            args.push("--adapter");
+            args.push(&adapter);
         }
         let raw = run_engine(&args)?;
         serde_json::from_str::<serde_json::Value>(&raw).map_err(|e| format!("bad format json: {e}"))
