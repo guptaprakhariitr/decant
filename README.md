@@ -16,10 +16,13 @@ one focused step, and every value is checked against the page it was pulled from
 
 ## Get started
 
-Download `Decant_<version>_aarch64.dmg` from [Releases](../../releases/latest), drag it to
-Applications, and open it. First launch: right-click the app → **Open** (until it's notarized on your
-machine). Then connect your AI engine in **Settings ▸ Models** — Decant auto-detects Claude Code,
-Cursor, an API key, or a local model and shows you what's ready.
+**macOS (Apple Silicon):** download `Decant_<version>_aarch64.dmg` from [Releases](../../releases/latest),
+drag it to Applications, and open it — it's signed and **notarized by Apple**, so it opens normally.
+**Windows (x64):** download `Decant_<version>_x64-setup.exe` and run it (it's not yet code-signed, so
+Windows SmartScreen may say "unknown publisher" → **More info ▸ Run anyway**).
+
+Then connect your AI engine in **Settings ▸ Models** — Decant auto-detects Claude Code, Cursor, an
+API key, or a local model and shows you what's ready.
 
 That's it. Drop a document on the Home screen and it opens in the Studio.
 
