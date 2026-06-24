@@ -14,6 +14,7 @@ import { SCHEMAS } from "./lib/schemas.ts";
 import { toFieldDefs, emptyField, type BField } from "./components/SchemaBuilder.tsx";
 import { prepPageImage } from "./lib/render.ts";
 import { loadState, saveState } from "./lib/persist.ts";
+import { checkForUpdate, openExternal, type UpdateInfo } from "./lib/update.ts";
 
 type Screen = "home" | "review" | "settings" | "guide";
 
@@ -52,6 +53,8 @@ export function App() {
   const [defCustom, setDefCustom] = useState<BField[]>([emptyField()]);
   const [jobs, setJobs] = useState<Job[]>(SEED_JOBS);
   const [activeJobId, setActiveJobId] = useState<string | null>(null);
+  const [update, setUpdate] = useState<UpdateInfo | null>(null);
+  const [updDismissed, setUpdDismissed] = useState(false);
   const activeJob = jobs.find((j) => j.id === activeJobId) ?? null;
 
   // ---- theme: resolve system → apply data-theme on <html>, react to OS changes ----
@@ -192,6 +195,8 @@ export function App() {
     detect().then((a) => { setAdapters(a); setDetectError(null); }).catch((e) => setDetectError(String(e))).finally(() => setChecking(false));
   }
   useEffect(recheck, []);
+  // Non-blocking "update available" check against the public GitHub release (silent on failure).
+  useEffect(() => { checkForUpdate().then(setUpdate).catch(() => {}); }, []);
 
   const ready = adapters.filter((a) => lightOf(a) === "green" && a.id !== "dry-run");
   const goConnect = () => { setSettingsSection("models"); setScreen("settings"); };
@@ -243,6 +248,14 @@ export function App() {
             {localOnly ? "Local-only" : "Egress on"}
           </span>
         </header>
+        {update && !updDismissed && (
+          <div className="updatebar">
+            <Icon name="arrowRight" size={13} />
+            <span>Decant <b>{update.latest}</b> is available.</span>
+            <button className="upd-link" onClick={() => openExternal(update.url)}>Download</button>
+            <button className="upd-x" title="Dismiss" onClick={() => setUpdDismissed(true)} aria-label="Dismiss">×</button>
+          </div>
+        )}
         <div className="body">
           {screen === "home" && <Home jobs={jobs} engineReady={ready.length > 0} onConnect={goConnect} onAddFiles={addFiles} onOpenJob={openJob} onDeleteJob={deleteJob} onEditDefaults={goDefaults} />}
           {screen === "review" &&

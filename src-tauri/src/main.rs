@@ -247,11 +247,27 @@ async fn read_file(path: String) -> Result<tauri::ipc::Response, String> {
     Ok(tauri::ipc::Response::new(bytes))
 }
 
+// Open a URL in the user's default browser (used by the "update available" banner).
+#[tauri::command]
+fn open_url(url: String) -> Result<(), String> {
+    // Only allow http(s) so this can't be coaxed into launching arbitrary commands.
+    if !(url.starts_with("https://") || url.starts_with("http://")) {
+        return Err("refused: non-http url".into());
+    }
+    #[cfg(target_os = "macos")]
+    let r = Command::new("open").arg(&url).spawn();
+    #[cfg(target_os = "windows")]
+    let r = Command::new("cmd").args(["/C", "start", "", &url]).spawn();
+    #[cfg(all(not(target_os = "macos"), not(target_os = "windows")))]
+    let r = Command::new("xdg-open").arg(&url).spawn();
+    r.map(|_| ()).map_err(|e| e.to_string())
+}
+
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_dialog::init())
-        .invoke_handler(tauri::generate_handler![detect_adapters, extract, parse_doc, chunk_doc, read_file, write_file, load_state, save_state])
+        .invoke_handler(tauri::generate_handler![detect_adapters, extract, parse_doc, chunk_doc, read_file, write_file, load_state, save_state, open_url])
         .run(tauri::generate_context!())
         .expect("error while running Decant");
 }
